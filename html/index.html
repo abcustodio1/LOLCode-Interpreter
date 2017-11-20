@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Lolcode Interpreter</title>
+  	<link rel="stylesheet" type="text/css" href="../css/semantic.min.css">
+  	<link rel="stylesheet" type="text/css" href="../css/index.css">
+    <script type="text/javascript" src="../js/index.js"></script>
+    <script type="text/javascript" src="../js/files.js"></script>
+    <script type="text/javascript" src="../js/lexer.js"></script>
+  </head>
+  <body>
+    <div class="ui divided grid whole">
+      <div class="blue row top"></div>
+      <div class="row middle">
+        <div class="eight wide column left">
+          <div class="ui form">
+            <div class="field">
+              <label>Coding Area</label>
+              <textarea rows="17" id="codeArea" placeholder="Code here..." spellcheck="false"></textarea>
+            </div>
+          </div>
+          <div class="ui grid">
+            <div class="four wide column" id="filePrompt">
+              Select LOLCODE file
+            </div>
+            <div class="four wide column">
+              <input id='fileUpload' type='file' onChange='lolcodeFileUpload(event);'>
+            </div>
+            <div class="right floated four wide column">
+              <button id='runButton' class='ui fluid button' type='Button' onClick='runCode();'>Run</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="four wide column middle">
+          <table class="ui selectable inverted celled table">
+            <thead>
+              <tr>
+                <th>Lexeme</th>
+                <th>Identifier</th>
+              </tr>
+            </thead>
+            <tbody id="tokenTable">
+            </tbody>
+          </table>
+        </div>
+        <div class="four wide column right">
+          <table class="ui selectable inverted celled table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody id="symbolTable">
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="row bottom">
+        <div class="column" id="consoleArea"></div>
+      </div>
+    </div>
+
+  </body>
+</html>
