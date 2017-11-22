@@ -20,7 +20,7 @@ var regex = [
      pattern: /^(WIN|FAIL)\s?/
  },
  {
-     type: "TYPE Literal",
+     type: "Data Type",
      pattern: /^(NUMBR|NUMBAR|TROOF|YARN|NOOB)\s?/
  },
  {
@@ -208,7 +208,6 @@ var regex = [
      pattern: /^"[^"]*"\s?/
  }
 ];
-
 var lines;
 
 const get_lines = () => {
