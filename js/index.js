@@ -18,4 +18,13 @@ const runCode = () => {
     }
     console.log(symbol_table);
   }
+
+  // for O RLY block
+  if(lines.length === 0 && ifelse_stack.length !== 0){
+    display("O RLY block is INCOMPLETE");
+  }
+  ifelse_tos = -1;
+  ifelse_stack = [];
+  waiting = false;
+  waiting_block = null;
 }

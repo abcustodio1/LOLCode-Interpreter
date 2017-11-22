@@ -3,18 +3,32 @@ const PASS = "PASS";
 const FINISH = "FINISH";
 
 const syntax_analyzer = (tokens) => {
-  var functions = [variable_declaration, print_statement];
+  var functions = [variable_declaration, print_statement, ifelse];
   var result;
-
-  for (let i = 0; i < functions.length; i++) {
-    result = functions[i](tokens);
-
-    if (result === ERROR) return false;
-    else if (result === FINISH) return true;
-
-    if (result === PASS && i === functions.length - 1) {
-      console.log("NO function read!");
+  if(waiting){
+    result = waiting_block(tokens); // call the waiting block which is ifelse() in this case
+    if(result === FINISH && !waiting && ifelse_stack.length === 0){
+        display("O RLY block is correct");
+        return true;
+    }
+    else if(result === ERROR){
       return false;
+    }
+    else{
+      return true;
+    }
+  }
+  else{
+    for (let i = 0; i < functions.length; i++) {
+      result = functions[i](tokens);
+
+      if (result === ERROR) return false;
+      else if (result === FINISH) return true;
+
+      if (result === PASS && i === functions.length - 1) {
+        console.log("NO function read!");
+        return false;
+      }
     }
   }
 }
