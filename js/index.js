@@ -12,6 +12,7 @@ const runCode = () => {
     }
 
     var tokens = lexical_analyzer();
+    console.log(tokens)
     if(!syntax_analyzer(tokens)) break;
     else{
       // semantic analyzer
@@ -27,4 +28,14 @@ const runCode = () => {
   ifelse_stack = [];
   waiting = false;
   waiting_block = null;
+
+  // for WTF? Block
+  if(lines.length === 0 && switchcase_stack.length !== 0){
+    display("WTF? block is INCOMPLETE");
+  }
+  switchcase_tos = -1;
+  switchcase_stack = [];
+  waiting = false;
+  waiting_block = null;
+
 }

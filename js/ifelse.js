@@ -173,8 +173,21 @@ const ifelse = (tokens) => {
 
 
 const statement_block = (tokens) => {
-	tokens = [];
-	return FINISH;
+	/*tokens = [];
+	return FINISH;*/
+	var statements = [variable_declaration, print_statement, logical_operations];
+	var result;
+	for (let i = 0; i < statements.length; i++) {
+      result = statements[i](tokens);
+
+      if (result === ERROR) return ERROR;
+      else if (result === FINISH) return FINISH;
+
+      if (result === PASS && i === statements.length - 1) {
+        display("Not Allowed inside Conditional Blocks");
+        return ERROR;
+      }
+    }
 
 	//this includes all operators (Logical and Arithmetic) and Variable Assignments (Not Declaration)
 

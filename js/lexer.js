@@ -28,23 +28,23 @@ var regex = [
      pattern: /^R\s?/
  },
  {
-     type: "Addition Operator",
+     type: "Addition Arithmetic Operator",
      pattern: /^SUM\s+OF\s?/
  },
  {
-     type: "Subtraction Operator",
-     pattern: /^DIFFRINT\s+OF\s?/
+     type: "Subtraction Arithmetic Operator",
+     pattern: /^DIFF\s+OF\s?/
  },
  {
-     type: "Multiplication Operator",
+     type: "Multiplication Arithmetic Operator",
      pattern: /^PRODUKT\s+OF\s?/
  },
  {
-     type: "Division Operator",
+     type: "Division Arithmetic Operator",
      pattern: /^QUOSHUNT\s+OF\s?/
  },
  {
-     type: "Modulo Operator",
+     type: "Modulo Arithmetic Operator",
      pattern: /^MOD\s+OF\s?/
  },
  {
@@ -56,15 +56,15 @@ var regex = [
      pattern: /^SMALLR\s+OF\s?/
  },
  {
-     type: "AND Operator",
+     type: "AND Logical Operator",
      pattern: /^BOTH\s+OF\s?/
  },
  {
-     type: "OR Operator",
+     type: "OR Logical Operator",
      pattern: /^EITHER\s+OF\s?/
  },
  {
-     type: "XOR Operator",
+     type: "XOR Logical Operator",
      pattern: /^WON\s+OF\s?/
  },
  {
@@ -76,7 +76,7 @@ var regex = [
      pattern: /^ANY\s+OF\s?/
  },
  {
-     type: "NOT Operator",
+     type: "NOT Logical Operator",
      pattern: /^NOT\s?/
  },
  {
@@ -88,11 +88,11 @@ var regex = [
      pattern: /^MKAY\s?/
  },
  {
-     type: "Comparing Operator",
+     type: "Comparing Logical Operator",
      pattern: /^BOTH\s+SAEM\s?/
  },
  {
-     type: "Comparing Operator (Negated)",
+     type: "Comparing Logical Operator (Negated)",
      pattern: /^DIFFRINT\s?/
  },
  {

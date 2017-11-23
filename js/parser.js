@@ -3,12 +3,12 @@ const PASS = "PASS";
 const FINISH = "FINISH";
 
 const syntax_analyzer = (tokens) => {
-  var functions = [variable_declaration, print_statement, ifelse];
+  var functions = [variable_declaration, print_statement, input_statement, assignment_statement, logical_operations, ifelse, switchcase, smoosh, arithmetic_operator];
   var result;
   if(waiting){
-    result = waiting_block(tokens); // call the waiting block which is ifelse() in this case
-    if(result === FINISH && !waiting && ifelse_stack.length === 0){
-        display("O RLY block is correct");
+    result = waiting_block(tokens); // call the waiting block which is ifelse or switchcase
+    if(result === FINISH && !waiting){
+        display("Block is correct");
         return true;
     }
     else if(result === ERROR){
@@ -35,7 +35,6 @@ const syntax_analyzer = (tokens) => {
 
 const variable_declaration = (tokens) => {
   var symbol = {};
-
 
   if (tokens[0].type === "Variable Declaration") {
 
@@ -75,6 +74,12 @@ const variable_declaration = (tokens) => {
             console.log("ERROR! Expected data type!");
             return ERROR;
           }
+        } else {
+          var check = logical_operations(tokens);
+          if (check === FINISH) {
+            console.log("I HAS A statement with inner statements detected.");
+            return FINISH;
+          }else if (check === ERROR) return ERROR;
         }
 
         // catch cases if variable, statement, etc.
@@ -104,7 +109,13 @@ const print_statement = (tokens) => {
     tokens.shift();
     if (tokens[0].type.includes("Literal")) tokens.shift();
     else if (tokens[0].type === "Variable Identifier") tokens.shift();
-    // catch statement
+    else {
+      var check = logical_operations(tokens);
+      if (check === FINISH) {
+        console.log("VISIBLE statement with inner statements detected.");
+        return FINISH;
+      }else if (check === ERROR) return ERROR;
+    }
 
     if (tokens.length === 0) {
       console.log("VISIBLE statement encountered.");
@@ -114,5 +125,115 @@ const print_statement = (tokens) => {
       return ERROR;
     }
 
+  } else return PASS;
+}
+
+const input_statement = (tokens) => {
+  if (tokens[0].type === "Input Keyword") {
+    tokens.shift();
+    if (tokens[0].type === "Variable Identifier") {
+      tokens.shift();
+
+      if (tokens.length === 0) {
+        console.log("GIMMEH statement detected.");
+        return FINISH;
+      } else {
+        console.log("ERROR! Unexpected identifier!");
+        return ERROR;
+      }
+    } else {
+      console.log("ERROR! Expected Variable Identifier");
+      return ERROR;
+    }
+
+  } else return PASS;
+}
+
+const assignment_statement = (tokens) => {
+  if (tokens[0].type === "Variable Identifier") {
+    tokens.shift();
+    if (tokens[0].type === "Value Assignment") {
+      tokens.shift();
+      if (tokens[0].type === "Variable Identifier") tokens.shift();
+      else if (tokens[0].type.includes("Literal")) tokens.shift();
+      // catch statements
+      else {
+        var check = logical_operations(tokens);
+        if (check === FINISH) {
+          console.log("ASSIGNMENT statement with inner statements detected.");
+          return FINISH;
+        }else if (check === ERROR) return ERROR;
+      }
+
+      if (tokens.length === 0) {
+        console.log("Assignment statement detected.");
+        return FINISH;
+      } else {
+        console.log("ERROR! Unexpected identifier!");
+        return ERROR;
+      }
+    } else return PASS;
+
+  } else return PASS;
+}
+
+const logical_operations = (tokens) => {
+  var stack = [];
+  var tail;
+  var types = ["Comparing Logical Operator", "Comparing Logical Operator (Negated)", "AND Logical Operator", "OR Logical Operator", "XOR Logical Operator", "NOT Logical Operator"];
+
+  if (tokens[0].type.includes("Logical Operator")) {
+    while (tokens.length !== 0) {
+      tail = tokens.length - 1;
+      if (tokens[tail].type === "NUMBR Literal") {
+        console.log("Found literal.");
+        stack.push(tokens[tail]);
+        tokens.pop();
+        console.log(stack);
+      } else {
+
+        for (let i = 0; i < types.length; i++) {
+          if (tokens[tail].type === "NOT Logical Operator") {
+            if (stack.length === 0) {
+              console.log("ERROR! Nothing to pop!");
+              return ERROR;
+            } else stack.pop();
+
+            stack.push("ANSWER");
+
+            tokens.pop();
+            console.log(stack);
+            break;
+          } else if (tokens[tail].type === types[i]) {
+            if (stack.length === 0) {
+              console.log("ERROR! Nothing to pop!");
+              return ERROR;
+            } else stack.pop();
+
+            if (stack.length === 0) {
+              console.log("ERROR! Needs one more to pop!");
+              return ERROR;
+            } else stack.pop();
+
+            stack.push("ANSWER");
+
+            tokens.pop();
+            console.log(stack);
+            break;
+          } else if (i === types.length - 1) {
+            console.log("ERROR! Unknown Identifier");
+            return ERROR;
+          }
+        }
+      }
+    }
+
+    if (stack.length > 1) {
+      console.log("ERROR! Unexpected something.");
+      return ERROR;
+    } else {
+      console.log("Successful.");
+      return FINISH;
+    }
   } else return PASS;
 }
