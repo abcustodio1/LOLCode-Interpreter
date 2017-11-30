@@ -41,6 +41,11 @@ const variable_declaration = (tokens) => {
     tokens.shift();
     if (tokens[0].type === "Variable Identifier") {
 
+      if (find_variable(tokens[0].lexeme) !== -1) {
+        display("ERROR! Variable already initialized.");
+        return ERROR;
+      }
+
       symbol = {
         name: tokens[0].lexeme,
         type: "NOOB",
@@ -76,12 +81,9 @@ const variable_declaration = (tokens) => {
             return ERROR;
           }
         } else {
-          var check = operator(tokens);
+          var check = logical_operations(tokens);
           if (check === FINISH) {
             console.log("I HAS A statement with inner statements detected.");
-            symbol.type = "SOME TYPE";
-            symbol.value = "SOME VALUE";
-            symbol_table.push(symbol);
             return FINISH;
           }else if (check === ERROR) return ERROR;
         }
@@ -102,9 +104,6 @@ const variable_declaration = (tokens) => {
         return ERROR;
       }
 
-    } else {
-      console.log("ERROR! Not a variable.");
-      return ERROR;
     }
 
   } else return PASS;
@@ -131,7 +130,7 @@ const print_statement = (tokens) => {
           tokens.shift();
         }
       } else {
-        var check = operator(tokens);
+        var check = logical_operations(tokens);
         if (check === FINISH) {
           console.log("VISIBLE statement with inner statements detected.");
           it_string.push("ANSWER");
@@ -173,44 +172,21 @@ const input_statement = (tokens) => {
 
 const assignment_statement = (tokens) => {
   if (tokens[0].type === "Variable Identifier") {
-    var i = find_variable(tokens[0].lexeme);
-    if (i === -1) {
-      display("ERROR! Variable not yet initialized!");
-      return ERROR;
-    }
-
     tokens.shift();
     if (tokens[0].type === "Value Assignment") {
       tokens.shift();
-      if (tokens[0].type === "Variable Identifier") {
-        var next = find_variable(tokens[0].lexeme);
-        if (i === -1) {
-          display("ERROR! Variable not yet initialized");
-          return ERROR;
-        }
-
-        symbol_table[i].type = symbol_table[next].type;
-        symbol_table[i].value = symbol_table[next].value;
-      } else if (tokens[0].type.includes("Literal")){
-        symbol_table[i].type = tokens[0].type.slice(0, tokens[0].type.indexOf(" Literal"));
-        if (tokens[0].type.includes("NUMBR")) symbol_table[i].value = parseInt(tokens[0].lexeme);
-        else if (tokens[0].type.includes("NUMBAR")) symbol_table[i].value = parseFloat(tokens[0].lexeme);
-        else if (tokens[0].lexeme === "WIN") symbol_table[i].value = true;
-        else if (tokens[0].lexeme === "FAIL") symbol_table[i].value = false;
-        else symbol_table[i].value = tokens[0].lexeme;
-      }// catch statements
+      if (tokens[0].type === "Variable Identifier") tokens.shift();
+      else if (tokens[0].type.includes("Literal")) tokens.shift();
+      // catch statements
       else {
-        var check = operator(tokens);
+        var check = logical_operations(tokens);
         if (check === FINISH) {
           console.log("ASSIGNMENT statement with inner statements detected.");
-          symbol_table[i].type = "SOME TYPE";
-          symbol_table[i].value = "SOME VALUE";
           return FINISH;
         }else if (check === ERROR) return ERROR;
       }
 
-      tokens.shift();
-      if (tokens.length === 0 || tokens[0].lexeme === "BTW") {
+      if (tokens.length === 0) {
         console.log("Assignment statement detected.");
         return FINISH;
       } else {

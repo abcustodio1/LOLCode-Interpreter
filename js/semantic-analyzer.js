@@ -1,16 +1,31 @@
 const semantic_analyzer = (tokens) => {
-  switch(tokens[0].type) {
-    case "Input Keyword":
-      execute_input(tokens);
-      break;
-    case "Output Keyword":
-      execute_output(tokens);
-      break;
-    default:
-      console.log("PASS");
-  }
+  if(tokens[0].type === "Variable Declaration") return true;
+  var functions = [ hai_kthxbye , semantic_input_output, semantic_operator];
+  var result;
+  for (let i = 0; i < functions.length; i++) {
+      result = functions[i](tokens);
 
-  return true;
+      if (result === ERROR) return false;
+      else if (result === FINISH) return true;
+
+      if (result === PASS && i === functions.length - 1) {
+        console.log("NO function read!");
+        return false;
+      }
+   }
+}
+
+const semantic_input_output = (tokens) => {
+	switch(tokens[0].type) {
+		case "Input Keyword":
+		  return execute_input(tokens);
+		case "Output Keyword":
+		  return execute_output(tokens);
+		default:
+		  return PASS;
+	}
+
+	return FINISH;
 }
 
 const find_variable = (name) => {
@@ -29,7 +44,8 @@ const execute_input = (tokens) => {
     var input = prompt("","");
 
     if (input === null) {
-      console.log("Error");
+      console.log("Error: No Input");
+      return ERROR;
     } else {
       symbol_table[i].type = "YARN";
       symbol_table[i].value = input;
@@ -39,10 +55,10 @@ const execute_input = (tokens) => {
 
   } else {
     display("ERROR! Uninitialized variable.");
-    return false;
+    return ERROR;
   }
 }
 
 const execute_output = (tokens) => {
-  document.getElementById("consoleArea").innerHTML += "<br>" + symbol_table[0].value;
+  document.getElementById("consoleArea").innerHTML += symbol_table[0].value + "<br>";
 }

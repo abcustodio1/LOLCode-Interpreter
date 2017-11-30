@@ -32,7 +32,10 @@ const runCode = () => {
 
         document.getElementById("symbolTable").innerHTML = symbolTableContent;
 
-        if (!semantic_analyzer(tokens_cpy)) break;
+        if (!semantic_analyzer(tokens_cpy)){
+          result = ERROR;
+          break;
+        }
       }
     }
     else if(tokens === ERROR){
