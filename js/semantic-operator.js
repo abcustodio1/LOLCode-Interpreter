@@ -12,7 +12,7 @@ const semantic_operator = (tokens) => {
 	if(operators.includes(tokens[0].type)){
 		operation.push({operator: tokens[0].type, operands: 0, max: (tokens[0].type === "NOT Logical Operator" ? 1 : 2)}); // push operator
 		++operation_tos;
-		display("Pushed into OP-Stack: " + tokens[0].lexeme);
+		// display("Pushed into OP-Stack: " + tokens[0].lexeme);
 		for(let i = 1; i < tokens.length; ++i){
 			// check if an_flag is true
 			if(an_flag){
@@ -20,7 +20,7 @@ const semantic_operator = (tokens) => {
 				if(operators.includes(tokens[i].type)){
 					operation.push({operator: tokens[i].type, operands: 0, max: (tokens[i].type === "NOT Logical Operator" ? 1 : 2)}); // push operator
 					++operation_tos;
-					display("Pushed into OP-Stack: " + tokens[i].lexeme);
+					// display("Pushed into OP-Stack: " + tokens[i].lexeme);
 					an_flag = false;
 				}
 				// check if its literal or variable
@@ -29,6 +29,10 @@ const semantic_operator = (tokens) => {
 						let index = find_variable(tokens[i].lexeme);
 						if(index === -1){
 							display("Cannot find Identifier " + tokens[i].lexeme);
+							operation = [];
+							operation_tos = -1;
+							literal_stack = [];
+							literal_tos = -1;
 							return ERROR;
 						}
 						else{
@@ -41,7 +45,7 @@ const semantic_operator = (tokens) => {
 						++literal_tos;
 						
 					}
-					display("Pushed into Literal-Stack: " + literal_stack[literal_tos]);
+					// display("Pushed into Literal-Stack: " + literal_stack[literal_tos]);
 					if(operation_tos !== -1) ++operation[operation_tos].operands;
 					an_flag = false;
 				}
@@ -59,7 +63,7 @@ const semantic_operator = (tokens) => {
 			// if AN and there's one operand
 			else if(tokens[i].type === "Multiple Arrity Conjunctor"){
 				if(operation_tos === -1 || operation[operation_tos].operands === 1){
-					display("See AN");
+					// display("See AN");
 					an_flag = true;
 					// continue;
 				}
@@ -87,7 +91,7 @@ const semantic_operator = (tokens) => {
 				else{
 					operation.push({operator: tokens[i].type, operands: 0, max: (tokens[i].type === "NOT Logical Operator" ? 1 : 2)}); // push operator
 					++operation_tos;
-					display("Pushed into OP-Stack: " + tokens[i].lexeme);
+					// display("Pushed into OP-Stack: " + tokens[i].lexeme);
 				}
 			}
 			// if literal or variable
@@ -117,7 +121,7 @@ const semantic_operator = (tokens) => {
 						++literal_tos;
 						
 					}
-					display("Pushed into Literal-Stack: " + literal_stack[literal_tos]);
+					// display("Pushed into Literal-Stack: " + literal_stack[literal_tos]);
 					if(operation_tos !== -1) ++operation[operation_tos].operands;
 				}
 			}
@@ -138,15 +142,15 @@ const semantic_operator = (tokens) => {
 					var first_operand = null;
 					var second_operand = literal_stack.pop(); // (2nd operand)
 					--literal_tos;
-					display("Popped from Literal-Stack: " + second_operand);
+					// display("Popped from Literal-Stack: " + second_operand);
 					if(operation[operation_tos].max !== 1){
 						first_operand = literal_stack.pop(); // (1st operand)
 						--literal_tos;
-						display("Popped from Literal-Stack: " + first_operand);
+						// display("Popped from Literal-Stack: " + first_operand);
 					}
 					operation_used = operation.pop(); // pop the operator in tos
 					--operation_tos;
-					display("Popped from OP-Stack: " + operation_used.operator);
+					// display("Popped from OP-Stack: " + operation_used.operator);
 
 					var result = execute_operation(operation_used.operator, first_operand, second_operand);
 					if(result === ERROR){
@@ -158,7 +162,7 @@ const semantic_operator = (tokens) => {
 					}
 					literal_stack.push(result); // push result of the operations (DUMMY in this case)
 					++literal_tos;
-					display("Pushed into OP-Stack: " + result);
+					// display("Pushed into Literal-Stack: " + result);
 					if(operation_tos === -1) break;
 					operation[operation_tos].operands += 1; // and add operand count for the latest operator
 				} 
@@ -166,8 +170,12 @@ const semantic_operator = (tokens) => {
 
 			// if there's only one operand and no operators left
 			if(operation.length === 0 && literal_stack.length === 1 && i === tokens.length - 1){
-				display("Correct Arithmetic Semantic");
-				display(literal_stack.pop());
+				// display("Correct Arithmetic Semantic");
+				let answer = literal_stack.pop();
+				symbol_table[0].type = categorize(answer.toString());
+				symbol_table[0].value = answer;
+				render_symbol_table();
+				display(answer);
 				operation = [];
 				operation_tos = -1;
 				literal_stack = [];
@@ -401,5 +409,17 @@ const execute_operation = (operator, first_operand, second_operand) => {
 				display(operator + " Detected Invalid operand");
 				return ERROR;
 			}
+	}
+}
+
+
+const categorize = (value) => {
+	if(!isNaN(parseFloat(value))){
+		if(value.includes(".")) return "NUMBAR";
+		else return "NUMBR";
+	}
+	else{
+		if(value.includes("\"")) return "YARN";
+		else return "TROOF";
 	}
 }

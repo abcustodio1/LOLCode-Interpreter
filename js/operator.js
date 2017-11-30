@@ -13,7 +13,7 @@ const operator = (tokens) => {
 	if(operators.includes(tokens[0].type)){
 		op_stack.push({operator: tokens[0].type, operands: 0, max: (tokens[0].type === "NOT Logical Operator" ? 1 : 2)}); // push operator
 		++op_tos;
-		display("Pushed into OP-Stack: " + tokens[0].lexeme);
+		// display("Pushed into OP-Stack: " + tokens[0].lexeme);
 		for(let i = 1; i < tokens.length; ++i){
 			// check if an_flag is true
 			if(an_flag){
@@ -21,14 +21,14 @@ const operator = (tokens) => {
 				if(operators.includes(tokens[i].type)){
 					op_stack.push({operator: tokens[i].type, operands: 0, max: (tokens[i].type === "NOT Logical Operator" ? 1 : 2)}); // push operator
 					++op_tos;
-					display("Pushed into OP-Stack: " + tokens[i].lexeme);
+					// display("Pushed into OP-Stack: " + tokens[i].lexeme);
 					an_flag = false;
 				}
 				// check if its literal or variable
 				else if(tokens[i].type.includes("Literal") || tokens[i].type.includes("Identifier")){
 					lit_stack.push(tokens[i].type) // push literal
 					++lit_tos;
-					display("Pushed into Literal-Stack: " + tokens[i].lexeme);
+					// display("Pushed into Literal-Stack: " + tokens[i].lexeme);
 					if(op_tos !== -1) ++op_stack[op_tos].operands;
 					an_flag = false;
 				}
@@ -46,7 +46,7 @@ const operator = (tokens) => {
 			// if AN and there's one operand
 			else if(tokens[i].type === "Multiple Arrity Conjunctor"){
 				if(op_tos === -1 || op_stack[op_tos].operands === 1){
-					display("See AN");
+					// display("See AN");
 					an_flag = true;
 					// continue;
 				}
@@ -74,7 +74,7 @@ const operator = (tokens) => {
 				else{
 					op_stack.push({operator: tokens[i].type, operands: 0, max: (tokens[i].type === "NOT Logical Operator" ? 1 : 2)}); // push operator
 					++op_tos;
-					display("Pushed into OP-Stack: " + tokens[i].lexeme);
+					// display("Pushed into OP-Stack: " + tokens[i].lexeme);
 				}
 			}
 			// if literal or variable
@@ -90,7 +90,7 @@ const operator = (tokens) => {
 				else{
 					lit_stack.push(tokens[i].type) // push literal
 					++lit_tos;
-					display("Pushed into Literal-Stack: " + tokens[i].lexeme);
+					// display("Pushed into Literal-Stack: " + tokens[i].lexeme);
 					if(op_tos !== -1) ++op_stack[op_tos].operands;
 				}
 			}
@@ -110,18 +110,18 @@ const operator = (tokens) => {
 					//pop last 2 operands
 					let popped = lit_stack.pop(); // (2nd operand)
 					--lit_tos;
-					display("Popped from Literal-Stack: " + popped);
+					// display("Popped from Literal-Stack: " + popped);
 					if(op_stack[op_tos].max !== 1){
 						popped = lit_stack.pop(); // (1st operand)
 						--lit_tos;
-						display("Popped from Literal-Stack: " + popped);
+						// display("Popped from Literal-Stack: " + popped);
 					}
 					popped = op_stack.pop(); // pop the operator in tos
 					--op_tos;
-					display("Popped from OP-Stack: " + popped.operator);
+					// display("Popped from OP-Stack: " + popped.operator);
 					lit_stack.push(DUMMY); // push result of the operations (DUMMY in this case)
 					++lit_tos;
-					display("Pushed into OP-Stack: result");
+					// display("Pushed into OP-Stack: result");
 					if(op_tos === -1) break;
 					op_stack[op_tos].operands += 1; // and add operand count for the latest operator
 				} 
@@ -129,7 +129,7 @@ const operator = (tokens) => {
 
 			// if there's only one operand and no operators left
 			if(op_stack.length === 0 && lit_stack.length === 1 && i === tokens.length - 1){
-				display("Correct Arithmetic Syntax");
+				// display("Correct Arithmetic Syntax");
 				op_stack = [];
 				op_tos = -1;
 				lit_stack = [];

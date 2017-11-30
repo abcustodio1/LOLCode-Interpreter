@@ -1,6 +1,6 @@
 const semantic_analyzer = (tokens) => {
   if(tokens[0].type === "Variable Declaration") return true;
-  var functions = [ hai_kthxbye , semantic_input_output, semantic_operator];
+  var functions = [ hai_kthxbye , semantic_input_output, semantic_operator, infinite_logical_semantic];
   var result;
   for (let i = 0; i < functions.length; i++) {
       result = functions[i](tokens);

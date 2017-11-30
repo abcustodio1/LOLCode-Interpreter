@@ -25,12 +25,7 @@ const runCode = () => {
         break;
       }  
       else{
-        var symbolTableContent = "";
-        for(let i = 0; i < symbol_table.length; ++i){
-            symbolTableContent = symbolTableContent + "<tr><td>" + symbol_table[i].name + "</td><td>" + symbol_table[i].type + "</td><td>" + symbol_table[i].value + "</td></tr>";
-        }
-
-        document.getElementById("symbolTable").innerHTML = symbolTableContent;
+        render_symbol_table();
 
         if (!semantic_analyzer(tokens_cpy)){
           result = ERROR;
@@ -92,4 +87,13 @@ const clear_tables = () => {
   type: "NOOB",
   value: null
 }];
+}
+
+const render_symbol_table = () => {
+  var symbolTableContent = "";
+    for(let i = 0; i < symbol_table.length; ++i){
+        symbolTableContent = symbolTableContent + "<tr><td>" + symbol_table[i].name + "</td><td>" + symbol_table[i].type + "</td><td>" + symbol_table[i].value + "</td></tr>";
+    }
+
+    document.getElementById("symbolTable").innerHTML = symbolTableContent;
 }

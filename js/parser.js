@@ -3,7 +3,7 @@ const PASS = "PASS";
 const FINISH = "FINISH";
 
 const syntax_analyzer = (tokens) => {
-  var functions = [ hai_kthxbye, operator, variable_declaration, print_statement, input_statement, assignment_statement, ifelse, switchcase, smoosh];
+  var functions = [ hai_kthxbye, operator, variable_declaration, print_statement, input_statement, assignment_statement, ifelse, switchcase, smoosh, infinite_logical];
   var result;
   if(waiting){
     result = waiting_block(tokens); // call the waiting block which is ifelse or switchcase
