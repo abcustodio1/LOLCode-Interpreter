@@ -1,36 +1,16 @@
 'use strict';
 
-/*var regex = [  
-					{  
-	                    type: "IF or Switch Case Statement End Keyword",
-	                    pattern: /^OIC\s?/
-	                },
-	                {   
-	                    type: "Switch Case Start Keyword",
-	                    pattern: /^WTF\?\s?/
-	                },
-	                {   
-	                    type: "Switch Cases Keyword",
-	                    pattern: /^OMG\s?/
-	                },
-	                {   
-	                    type: "Break Keyword",
-	                    pattern: /^GTFO\s?/
-	                },
-	                {   
-	                    type: "Default Cases Keyword",
-	                    pattern: /^OMGWTF\s?/
-	                }
-	    ];
-*/
-
 var switchcase_stack = [];
 var switchcase_tos = -1;
+var statement_stack_switch = [];
+var found = false;
+var it_value;
 
 const switchcase = (tokens) => {
 	var switch_components = ["Switch Cases Keyword", "Default Cases Keyword", "Break Keyword", "IF or Switch Case Statement End Keyword"];
 	// if WTF?
 	if(tokens[0].type === "Switch Case Start Keyword"){
+		it_value = symbol_table[0].value;
 		if(switchcase_stack.length === 0){
 			switchcase_stack.push(tokens[0].type); //push WTF?
 			++switchcase_tos;
@@ -48,10 +28,21 @@ const switchcase = (tokens) => {
 	else if(switchcase_stack.length !== 0){
 		// check if OMG
 		if(tokens[0].type === "Switch Cases Keyword"){
-			// check if there's a possible literal 
+			// check if there's a possible literal
 			if(tokens.length > 1 && tokens[1].type.includes("Literal")){
 				// if tos is WTF?
 				if(switchcase_stack[switchcase_tos] === "Switch Case Start Keyword"){
+					if (found === true) found = false;
+
+					console.log(tokens[1].lexeme);
+					console.log(symbol_table);
+					console.log(it_value);
+
+					if (tokens[1].lexeme === it_value) {
+						found = true;
+						console.log("IN!" + tokens[1].lexeme);
+					}
+
 					switchcase_stack.push(tokens[0].type); //push OMG
 					++switchcase_tos;
 					display("Pushed into Case-Stack: " + tokens[0].lexeme);
@@ -95,7 +86,7 @@ const switchcase = (tokens) => {
 				++switchcase_tos;
 				display("Pushed into Case-Stack: " + tokens[0].lexeme);
 				tokens.shift();
-				tokens.shift();							
+				tokens.shift();
 			}
 			// otherwise, throws error
 			else{
@@ -120,7 +111,9 @@ const switchcase = (tokens) => {
 				display("Popped from Case-Stack: " + popped);
 				tokens.shift();
 				waiting = false;
-				waiting_block = null;	
+				waiting_block = null;
+
+				execute_switch(statement_stack_switch);
 			}
 			// if none satisfies, throws an error
 			else{
@@ -195,7 +188,10 @@ const statement_block_wtf = (tokens) => {
       result = statements[i](tokens);
 
       if (result === ERROR) return ERROR;
-      else if (result === FINISH) return FINISH;
+			else if (result === FINISH) {
+				if (found) statement_stack_switch.push(tokens_cpy);
+				return FINISH;
+			}
 
       if (result === PASS && i === statements.length - 1) {
         display("Not Allowed inside Conditional Blocks");

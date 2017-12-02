@@ -2,6 +2,7 @@ const semantic_analyzer = (tokens) => {
   if(tokens[0].type === "Variable Declaration") return true;
   var functions = [ hai_kthxbye , semantic_input_output, semantic_operator, infinite_logical_semantic];
   var result;
+
   for (let i = 0; i < functions.length; i++) {
       result = functions[i](tokens);
 
@@ -61,4 +62,26 @@ const execute_input = (tokens) => {
 
 const execute_output = (tokens) => {
   document.getElementById("consoleArea").innerHTML += symbol_table[0].value + "<br>";
+  return FINISH;
+}
+
+const execute_if_else = (tokens) => {
+  for (let i = 0; i < tokens.length; i++) {
+    var res = semantic_analyzer(tokens[i]);
+
+    if (!res) return false;
+  }
+
+  return true;
+}
+
+const execute_switch = tokens => {
+  console.log(tokens);
+  for (let i = 0; i < tokens.length; i++) {
+    var res = semantic_analyzer(tokens[i]);
+
+    if (!res) return false;
+  }
+
+  return true;
 }

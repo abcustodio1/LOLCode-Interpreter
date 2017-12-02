@@ -1,49 +1,11 @@
 'use strict';
 
-/*var regex = [  
-	   
-	                {   
-	                    type: "IF Statement Start Keyword",
-	                    pattern: /^O\s+RLY\s*\?\s?/
-	                },
-	                {   
-	                    type: "IF TRUE Block Keyword",
-	                    pattern: /^YA\s+RLY\s?/
-	                },
-	                {   
-	                    type: "ELSE Block Keyword",
-	                    pattern: /^NO\s+WAI\s?/
-	                },
-	                {   
-	                    type: "ELSE IF Block Keyword",
-	                    pattern: /^MEBBE\s?/
-	                },
-	                {   
-	                    type: "IF or Switch Case Statement End Keyword",
-	                    pattern: /^OIC\s?/
-	                },
-	                {   
-	                    type: "Switch Case Start Keyword",
-	                    pattern: /^WTF\?\s?/
-	                },
-	                {   
-	                    type: "Switch Cases Keyword",
-	                    pattern: /^OMG\s?/
-	                },
-	                {   
-	                    type: "Break Keyword",
-	                    pattern: /^GTFO\s?/
-	                },
-	                {   
-	                    type: "Default Cases Keyword",
-	                    pattern: /^OMGWTF\s?/
-	                }
-	    ];
-*/
 var ifelse_stack = [];
 var ifelse_tos = -1;
 var waiting = false;
 var waiting_block = null;
+var yarlyflag = false;
+var nowaiflag = false;
 
 // returns true if no syntax error encountered
 // otherwise, returns ERROR
@@ -71,6 +33,8 @@ const ifelse = (tokens) => {
 		if(tokens[0].type === "IF TRUE Block Keyword"){
 			// check if ifelse_tos is O RLY?
 			if(ifelse_stack[ifelse_tos] === "IF Statement Start Keyword"){
+				yarlyflag = true;
+				nowaiflag = false;
 				ifelse_stack.push(tokens[0].type);
 				++ifelse_tos;
 				display("Pushed into Stack: " + tokens[0].lexeme);
@@ -87,6 +51,8 @@ const ifelse = (tokens) => {
 		else if(tokens[0].type === "ELSE Block Keyword"){
 			// if YA RLY
 			if(ifelse_stack[ifelse_tos] === "IF TRUE Block Keyword"){
+				nowaiflag = true;
+				yarlyflag = false;
 				display("Popped from Stack: " + ifelse_stack.pop());// pop YA RLY
 				--ifelse_tos;
 				ifelse_stack.push(tokens[0].type);// push NO WAI
@@ -104,7 +70,7 @@ const ifelse = (tokens) => {
 		// if OIC
 		else if(tokens[0].type === "IF or Switch Case Statement End Keyword"){
 			// check if ifelse_tos is O RLY, throws error
-			if(ifelse_stack[ifelse_tos] === "IF Statement Start Keyword"){	
+			if(ifelse_stack[ifelse_tos] === "IF Statement Start Keyword"){
 				display("Expected YA RLY Before OIC");
 				return ERROR;
 			}
@@ -117,6 +83,16 @@ const ifelse = (tokens) => {
 				tokens.shift();
 				waiting = false;
 				waiting_block = null;
+
+				var temp;
+				if (symbol_table[0].value === "WIN") temp = execute_if_else(statement_stack_if);
+				else temp = execute_if_else(statement_stack_else);
+
+				statement_stack_if = [];
+				statement_stack_else = [];
+
+				if (temp) return FINISH;
+				else return ERROR;
 			}
 			// check if ifelse_tos is NO WAI
 			else if(ifelse_stack[ifelse_tos] === "ELSE Block Keyword"){
@@ -127,6 +103,16 @@ const ifelse = (tokens) => {
 				tokens.shift();
 				waiting = false;
 				waiting_block = null;
+
+				var temp;
+				if (symbol_table[0].value === "WIN") temp = execute_if_else(statement_stack_if);
+				else temp = execute_if_else(statement_stack_else);
+
+				statement_stack_if = [];
+				statement_stack_else = [];
+
+				if (temp) return FINISH;
+				else return ERROR;
 			}
 			// if none satisfies, throw an error
 			else{
@@ -171,6 +157,8 @@ const ifelse = (tokens) => {
 	return FINISH;
 }
 
+var statement_stack_if = [];
+var statement_stack_else = [];
 
 const statement_block = (tokens) => {
 	/*tokens = [];
@@ -181,7 +169,11 @@ const statement_block = (tokens) => {
       result = statements[i](tokens);
 
       if (result === ERROR) return ERROR;
-      else if (result === FINISH) return FINISH;
+      else if (result === FINISH) {
+				if (yarlyflag) statement_stack_if.push(tokens_cpy);
+				else if (nowaiflag) statement_stack_else.push(tokens_cpy);
+				return FINISH;
+			}
 
       if (result === PASS && i === statements.length - 1) {
         display("Not Allowed inside Conditional Blocks");
@@ -190,10 +182,9 @@ const statement_block = (tokens) => {
     }
 
 	//this includes all operators (Logical and Arithmetic) and Variable Assignments (Not Declaration)
-
 }
 
 
 const display = (message) => {
 	document.getElementById("consoleArea").innerHTML += ("<br>" + message);
-} 
+}

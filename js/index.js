@@ -6,6 +6,8 @@ var symbol_table = [{
   value: null
 }];
 
+var tokens_cpy = "";
+
 var result = null;
 const runCode = () => {
   clear_tables();
@@ -18,16 +20,16 @@ const runCode = () => {
     }
 
     var tokens = lexical_analyzer();
-    var tokens_cpy = tokens.slice();
+    tokens_cpy = tokens.slice();
     if(tokens !== ERROR && tokens.length !== 0){
       if(!syntax_analyzer(tokens)){
         result = ERROR;
         break;
-      }  
+      }
       else{
         render_symbol_table();
 
-        if (!semantic_analyzer(tokens_cpy)){
+        if (!waiting && tokens_cpy[0].lexeme !== "OIC" && !semantic_analyzer(tokens_cpy)){
           result = ERROR;
           break;
         }
