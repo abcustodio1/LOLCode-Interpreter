@@ -205,7 +205,7 @@ var regex = [
  },
  {
      type: "YARN Literal",
-     pattern: /^".*"\s?/
+     pattern: /^"[^"]*"\s?/
  },
  {
      type: "Suppress New Line",
@@ -351,28 +351,6 @@ const lexical_analyzer = () => {
                       error_flag = true;
                       break;
                   }
-              }
-              if(regex[i].type === "YARN Literal"){
-                let string = result[0].substring(1, result[0].length - 1);
-                if(/:"/g.test(string)){
-                    string = string.replace(/:"/g, "&quote;");
-                    if(string.includes("\"")){
-                      error_prompt("Invalid Character inside YARN");
-                      error_flag = true;
-                      break;
-                    }
-                    else{
-                      string = string.replace(/&quote;/g, "\"");
-                      result[0] = "\"" + string + "\"";
-                    }
-                }
-                else {
-                  if(string.includes("\"")){
-                      error_prompt("Invalid Character inside YARN");
-                      error_flag = true;
-                      break;
-                  }
-                }
               }
               if(/:\)/g.test(result[0])) result[0] = result[0].replace(/:\)/g, "\\n");
               if(/:>/g.test(result[0])) result[0] = result[0].replace(/:>/g, "\\t");
