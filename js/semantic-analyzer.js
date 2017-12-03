@@ -248,6 +248,8 @@ const explicit_typecasting_semantic = (tokens) => {
       }
 
       if (tokens[0].type === "Data Type") {
+        if(symbol_table[index].type === "YARN") symbol_table[index].value = symbol_table[index].value.substring(1, symbol_table[index].value.length - 1);
+        console.log(symbol_table[index].value);
         var value = "";
         if (tokens[0].lexeme === "NUMBR") value = parseInt(symbol_table[index].value);
         else if (tokens[0].lexeme === "NUMBAR") value = parseFloat(symbol_table[index].value);
