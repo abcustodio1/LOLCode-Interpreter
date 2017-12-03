@@ -366,6 +366,13 @@ const lexical_analyzer = () => {
                       result[0] = "\"" + string + "\"";
                     }
                 }
+                else {
+                  if(string.includes("\"")){
+                      error_prompt("Invalid Character inside YARN");
+                      error_flag = true;
+                      break;
+                  }
+                }
               }
               if(/:\)/g.test(result[0])) result[0] = result[0].replace(/:\)/g, "\\n");
               if(/:>/g.test(result[0])) result[0] = result[0].replace(/:>/g, "\\t");
