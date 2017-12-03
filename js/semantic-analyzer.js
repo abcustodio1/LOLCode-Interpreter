@@ -57,21 +57,17 @@ const execute_input = (tokens) => {
   }
 }
 
-const execute_output = (tokens) => {
+const execute_output = (tokens, kill_newLine) => {
   var to_be_printed = symbol_table[0].value;
-  while(to_be_printed.includes("\"")){
-  	to_be_printed = to_be_printed.replace("\"", "");
-  }
-  while(to_be_printed.includes(" ")){
-  	to_be_printed = to_be_printed.replace(" ", "&nbsp;");
-  }
-  document.getElementById("consoleArea").innerHTML += to_be_printed + "<br>";
+  to_be_printed = to_be_printed.substring(1, to_be_printed.length - 1);
+  to_be_printed = to_be_printed.replace(/\s/g, "&nbsp;");
+  document.getElementById("consoleArea").innerHTML += to_be_printed + (kill_newLine ? "": "<br>");
   return FINISH;
 }
 
 const print_statement_semantic = (tokens) => {
   var it_string = [];
-
+  var kill_newLine = false;
   if (tokens[0].type === "Output Keyword") {
 
     tokens.shift();
@@ -94,7 +90,11 @@ const print_statement_semantic = (tokens) => {
           it_string.push(symbol_table[i].value);
           tokens.shift();
         }
-      } else {
+      } else if(tokens[0].type === "Suppress New Line"){
+          tokens.shift();
+          kill_newLine = true;
+      }
+      else {
         var check = operators_semantic(tokens);
         if (check === FINISH) {
           
@@ -110,7 +110,7 @@ const print_statement_semantic = (tokens) => {
       it_string = it_string.join(" ");
       symbol_table[0].value = "\"" + it_string + "\"";
       symbol_table[0].type = "YARN";
-      execute_output(tokens);
+      execute_output(tokens, kill_newLine);
       return FINISH;
     }
   } else return PASS;
@@ -248,6 +248,7 @@ const explicit_typecasting_semantic = (tokens) => {
       }
 
       if (tokens[0].type === "Data Type") {
+
         if(symbol_table[index].type === "YARN") symbol_table[index].value = symbol_table[index].value.substring(1, symbol_table[index].value.length - 1);
         console.log(symbol_table[index].value);
         var value = "";

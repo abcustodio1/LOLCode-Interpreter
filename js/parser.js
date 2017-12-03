@@ -170,7 +170,15 @@ const print_statement = (tokens) => {
           tokens.shift();
         }*/
         tokens.shift();
-      } else {
+      } else if (tokens[0].type === "Suppress New Line") {
+        tokens.shift();
+        if(tokens.length !== 0) {
+          error_prompt("Unexpected Identifier");
+          return ERROR;
+        }
+        return FINISH;
+      }
+       else {
         var check = operators(tokens);
         if (check === FINISH) {
           

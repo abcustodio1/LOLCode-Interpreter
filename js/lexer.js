@@ -206,6 +206,10 @@ var regex = [
  {
      type: "YARN Literal",
      pattern: /^"[^"]*"\s?/
+ },
+ {
+     type: "Suppress New Line",
+     pattern: /^!\s?/
  }
 ];
 var lines;
@@ -288,7 +292,6 @@ const lexical_analyzer = () => {
       var error_flag = false;
       for(let i = 0; i < regex.length; ++i){
           result = regex[i].pattern.exec(lines[0]);
-
           if(result !== null){
               lines[0] = lines[0].replace(result[0], "");
               if( /^\s+/.test(lines[0]) ) lines[0] = lines[0].replace(/^\s+/.exec(lines[0]), "");
@@ -324,6 +327,11 @@ const lexical_analyzer = () => {
                       error_prompt("Error in this statement: " + result[0] + lines[0] + "<br> Unable to extract a lexeme");
                       error_flag = true;
                       break;
+                  }
+                  else if(result[0] === "!"){
+                      error_prompt("Error in this statement: " + result[0] + lines[0] + "<br> Unable to extract a lexeme");
+                      error_flag = true;
+                      break; 
                   }
                   else {
                       lines[0] = result[0] + lines[0];
