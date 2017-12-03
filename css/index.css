@@ -46,9 +46,9 @@
 }
 
 #consoleArea {
-  background-color: #2d0f20;
+  background-color: orange/*#2d0f20*/;
   font-family: Monospace, sans;
   color: white;
   padding: 1% 3% 1% 3%;
-  overflow: auto;
+  overflow: scroll;
 }

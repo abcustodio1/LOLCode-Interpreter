@@ -47,7 +47,7 @@ const execute_input = (tokens) => {
     } else {
       symbol_table[i].type = "YARN";
       symbol_table[i].value = "\"" + input + "\"";
-      
+      document.getElementById("consoleArea").innerHTML += (input + "<br>");
       return FINISH;
     }
 
@@ -61,6 +61,8 @@ const execute_output = (tokens, kill_newLine) => {
   var to_be_printed = symbol_table[0].value;
   to_be_printed = to_be_printed.substring(1, to_be_printed.length - 1);
   to_be_printed = to_be_printed.replace(/\s/g, "&nbsp;");
+  to_be_printed = to_be_printed.replace(/\\n/g, "<br>");
+  to_be_printed = to_be_printed.replace(/\\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
   document.getElementById("consoleArea").innerHTML += to_be_printed + (kill_newLine ? "": "<br>");
   return FINISH;
 }
@@ -106,7 +108,7 @@ const print_statement_semantic = (tokens) => {
 
     if (tokens.length === 0) {
       
-      for(let i = 0; i < it_string.length; ++i) it_string[i] = remove_quotes(it_string[i]);
+      for(let i = 0; i < it_string.length; ++i) it_string[i] = it_string[i].substring(1, it_string[i].length - 1 );
       it_string = it_string.join(" ");
       symbol_table[0].value = "\"" + it_string + "\"";
       symbol_table[0].type = "YARN";
